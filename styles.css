@@ -1,0 +1,20 @@
+table {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    border: 2px solid #4F7849;
+    background-color: #EEEEEE;
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+  }
+
+  td {
+    border: 1px solid #4F7849;
+    padding: 3px 2px;
+    font-size: 19px;
+    font-weight: bold;
+    color: #4F7849;
+  }
+
+  tr:nth-child(even) {
+    background: #CEE0CC;
+  }
