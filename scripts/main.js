@@ -76,12 +76,3 @@ var removeOrder = function() {
 
 displayOrders();
 removeOrder();
-
-// someArray = [{name:"Kristian", lines:"2,5,10"},
-//              {name:"John", lines:"1,19,26,96"},
-//              {name:"Brian",lines:"3,9,62,36" }];
-// johnRemoved = someArray.filter(function(el) {
-//     return el.name !== "John";
-// });
-
-// console.log(JSON.stringify(johnRemoved, null, ' '));
