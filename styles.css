@@ -1,5 +1,5 @@
 table {
-    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-family: cursive, sans-serif, "Comic Sans MS";
     border: 2px solid #4F7849;
     background-color: #EEEEEE;
     width: 100%;
@@ -15,6 +15,10 @@ table {
     color: #4F7849;
   }
 
-  tr:nth-child(even) {
+  /* tr:nth-child(even) {
     background: #CEE0CC;
+  } */
+
+  tr {
+    background: lightgray;
   }

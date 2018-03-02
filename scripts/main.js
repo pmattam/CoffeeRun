@@ -7,6 +7,7 @@ var strength = document.querySelector("[name='strength']");
 var orderList = document.querySelector('.order-list');
 var table = document.createElement('table');
 var listOrders = [];
+var URL = 'https://dc-coffeerun.herokuapp.com/api/coffeeorders';
 
 var addOrder = function(obj) {
     var row = table.insertRow();
@@ -23,13 +24,6 @@ var addOrder = function(obj) {
     var removeCell = row.insertCell(5);
     removeCell.textContent = "X";
     orderList.appendChild(table);
-    console.log(row);
-};
-
-var saveOrders = function(objs) {
-    var jsonObjStr = JSON.stringify(objs);
-    console.log(jsonObjStr);
-    localStorage.setItem("orders", jsonObjStr);
 };
 
 coffeeForm.addEventListener('submit', function(event){
@@ -40,39 +34,77 @@ coffeeForm.addEventListener('submit', function(event){
     obj["size"] = size.value;
     obj["flavor"] = flavor.value;
     obj["strength"] = strength.value;
+    
+    let myData = {
+            "coffee": coffeeOrder.value,
+            "emailAddress": emailAddress.value,
+            "size": size.value,
+            "strength": strength.value,
+            "flavor": flavor.value
+        };
+    $.post(URL, myData);
     listOrders.push(obj);
     addOrder(obj);
-    saveOrders(listOrders);
 });  
 
 var displayOrders = function() {
-    var orderStr = localStorage.getItem("orders");
-    console.log(orderStr);
-    listOrders = JSON.parse(orderStr);
-    console.log(listOrders);
-    for(i=0; i<listOrders.length; i++) {
-        addOrder(listOrders[i]);
+    $.get(URL, function (data) {
+        var orders = [];
+        for(key in data) {
+            orders.push(data[key]);
+        }
+        for(var i=0; i<orders.length; i++) {
+            var text = orders[i];
+            text = JSON.stringify(text);
+            text = JSON.parse(text);
+            var order = {
+                "coffeeOrder": text.coffee, 
+                "emailAddress" : text.emailAddress,
+                "size" : text.size, 
+                "flavor" : text.flavor, 
+                "strength": text.strength
+            };
+            listOrders.push(order);
+            addOrder(listOrders[i]);
+            addRemoveEventListeners();
+        }
+    });   
+};
+
+var addRemoveEventListeners = function() {
+    for(var i=0; i<table.rows.length; i++) {
+        table.rows[i].cells[5].addEventListener('click', handleDelEvent);
     }
 };
 
-var removeOrder = function() {
-    for(i=0; i<table.rows.length; i++) {
-        table.rows[i].cells[5].addEventListener('click', function() {
-            var index = this.parentElement.rowIndex;
-            // console.log("hello");
-            // console.log(table.rows[index]);
-            var toDelEmail = table.rows[index].cells[1].textContent;
-            console.log(toDelEmail);
-            toDel = listOrders.filter(function(el) {
-                return el.emailAddress !== toDelEmail;
-            });
-            console.log(toDel);
-            listOrders = toDel;
-            table.deleteRow(index);
-            saveOrders(listOrders);
-        });
-    }
+var handleDelEvent = function(event){
+    event.preventDefault();
+    var index = this.parentElement.rowIndex;
+    var toDelEmail = table.rows[index].cells[1].textContent;
+    toDel = listOrders.filter(function(el) {
+        return el.emailAddress !== toDelEmail;
+    });
+    listOrders = toDel;
+    $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', success: function(result) {
+        console.log(result);
+    }});
+    table.rows[index].style.backgroundColor = "lightgreen";
+    table.rows[index].cells[5].removeEventListener('click', fn);
+    // table.rows[index].cells[5].removeEventListener('click', getEventListeners(table.rows[index].cells[5].click[0].listener));
+    // table.rows[index].cells[5].detachEvent('click', fn);
+    setTimeout(deleteOrder, 2000, index);
+    //console.log("you are here");
+};
+
+var fn = function() {
+    console.log("you are here");
+};
+
+var deleteOrder = function(index) { 
+    table.deleteRow(index);
 };
 
 displayOrders();
-removeOrder();
+//setTimeout(removeOrder, 1000);
+
+//window.document.removeEventListener("keydown", getEventListeners(window.document.keydown[0].listener)); 
