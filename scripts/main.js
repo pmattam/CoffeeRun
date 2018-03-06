@@ -63,6 +63,16 @@ coffeeForm.addEventListener('submit', function(event) {
     var order = getCoffeeForm(size);
     var postData = mapFromCoffeeForm(order);
     $.post(URL, postData);
+    // console.log(postData);
+    // var promise = fetch(URl), {
+    //     method: 'POST',
+    //     body: JSON.stringify(postData),
+    //     headers: new Headers({
+    //     'Content-Type': 'application/json'
+    //     });
+    //     });
+    // };
+
     listOrders.push(order);
     var addedOrder = addOrderToTable(order);
     orderList.appendChild(addedOrder);
@@ -110,9 +120,10 @@ var handleDelEvent = function(event){
     // };
 
         // Different way //
-    // var response = new Promise(function(resolve) {
-    //     $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', resolve});
-    // });
+    var response = new Promise(function(resolve) {
+        $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', resolve});
+    });
+
 
     table.rows[index].style.backgroundColor = "lightblue";
     table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
@@ -123,28 +134,73 @@ var deleteOrder = function(index) {
     table.deleteRow(index);
 };
 
+// var processGetData = function(serverData) {
+//     // getting list/array of only values (which are objects) and not keys from the server data
+//     var orders = Object.values(serverData); 
+//     // which returns a new list and assigning to my own list with mapped data
+//     listOrders = orders.map(mapToCoffeeForm); 
+//     // loop through the objects in the list and add orders and appends to the table
+//     listOrders.forEach(function(order) { 
+//         orderList.appendChild(addOrderToTable(order));
+//     });
+//     addEventListenerForX();
+// };
+
+// function sleep(ms) {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+//   }
+
+// async function demo(timeout) {
+//     //console.log('Taking a break...');
+//     await sleep(timeout);
+//     //console.log(timeout, ' milli second later');
+//   }
+
 var processGetData = function(serverData) {
+    // demo(5000);
+    // console.log("in process get data waiting");
+
     // getting list/array of only values (which are objects) and not keys from the server data
     var orders = Object.values(serverData); 
+    return orders;
+};
+
+var processData = function(orders) {
+    // demo(0);
+    // console.log("in process data waiting");
+
     // which returns a new list and assigning to my own list with mapped data
     listOrders = orders.map(mapToCoffeeForm); 
     // loop through the objects in the list and add orders and appends to the table
     listOrders.forEach(function(order) { 
         orderList.appendChild(addOrderToTable(order));
     });
-    // addEventListenerForX();
+    
 };
 
 var displayOrders = function() {
-        // without promises //
-    // $.get(URL, processGetData);
-        // using promises //
-    var promise = $.get(URL);
-    //console.log(promise);
-    promise.then(processGetData);
-        // or //
-    //$.get(URL).then(processGetData);
-    addEventListenerForX();
+    //     // without promises //
+    // // $.get(URL, processGetData);
+    //     // using promises //
+    // var promise = $.get(URL);
+    // //console.log(promise);
+    // promise.then(processGetData);
+    //     // or //
+    // //$.get(URL).then(processGetData);
+
+    //     // Using fetch...Bye Bye $.get //
+    // fetch(URL, {method: 'GET'}).then(function(response) {
+    //     return response.json().then(processGetData);
+    // });
+
+        // Using fetch...Bye Bye $.get //
+    fetch(URL, {method: 'GET'})
+        .then(function(response) {
+            return response.json();
+        })
+        .then(processGetData)
+        .then(processData)
+        .then(addEventListenerForX);
 };
 
 displayOrders();
