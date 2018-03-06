@@ -1,24 +1,34 @@
+.container {
+  background-color: cadetblue;
+}
+
+.panel {
+  font-family: cursive;
+  background-color: rosybrown;
+  font-size: 18px;
+}
+
+ .orders {
+  font-family: cursive;
+}
+
 table {
-    font-family: cursive, sans-serif, "Comic Sans MS";
-    border: 2px solid #4F7849;
-    background-color: #EEEEEE;
-    width: 100%;
-    text-align: center;
-    border-collapse: collapse;
-  }
+  font-family: cursive, sans-serif;
+  border: 0 solid rgba(5,5,5,0);
+  border-radius: 15px;
+  background-color: rgba(5,5,5,0);
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
 
-  td {
-    border: 1px solid #4F7849;
-    padding: 3px 2px;
-    font-size: 19px;
-    font-weight: bold;
-    color: #4F7849;
-  }
+td {
+  padding: 2px 2px;
+  font-size: 18px;
+  font-weight: bold;
+  color: darkcyan;
+}
 
-  /* tr:nth-child(even) {
-    background: #CEE0CC;
-  } */
-
-  tr {
-    background: lightgray;
-  }
+tr {
+  background: whitesmoke;
+}
