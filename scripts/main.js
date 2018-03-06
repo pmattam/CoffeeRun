@@ -62,7 +62,6 @@ coffeeForm.addEventListener('submit', function(event) {
     var size = document.querySelector('[name="size"]:checked').value;
     var order = getCoffeeForm(size);
     var postData = mapFromCoffeeForm(order);
-    //$.post(URL, postData);
     
     var promise = fetch(URL, {
         method: 'POST',
@@ -70,7 +69,6 @@ coffeeForm.addEventListener('submit', function(event) {
         headers: new Headers({'Content-Type': 'application/json'})
     });
     promise.then(function(value) { // function of a promise if fulfilled/successful
-        console.log(value);
         listOrders.push(order);
         var addedOrder = addOrderToTable(order);
         orderList.appendChild(addedOrder);
@@ -78,15 +76,6 @@ coffeeForm.addEventListener('submit', function(event) {
         }, function(failedReason) { // function of a promise if rejected/failed
         console.log("Post Failed Reason", failedReason);
     });
-
-        // Not handling promises right..check above to make it right //
-    // promise.then(function(reason) {
-    //         console.log("reason", reason);
-    //     });
-    // listOrders.push(order);
-    // var addedOrder = addOrderToTable(order);
-    // orderList.appendChild(addedOrder);
-    // addEventListenerForX();
 });  
 
 var addEventListenerForX = function() {
@@ -105,31 +94,24 @@ var handleDelEvent = function(event){
     listOrders = toDel;
     var url = URL+'/'+toDelEmail;
     
-        // Without promises //
-    // $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', success: function(result) {
-    //     console.log("Result is", result);
-    // }});
-
-        // Instead of callback with in async call...using promise and then do that functionality //
-    // var promise = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
-    // promise.then(function(result) {
-    //     console.log("Result in promise implementation", result);
-    // });
-
         // Using Fetch //
    fetch(url, {method: 'DELETE'})
         .then(function(result) {
             console.log("Result in fetch implementation", result);
             table.rows[index].style.backgroundColor = "lightblue";
             table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
-            setTimeout(deleteOrder, 2000, index);
+            // setTimeout(deleteOrder, 2000, index);
+                // using promises for setTimeout - writing my own promise// 
+            var promise = new Promise(function(resolve) {
+                var wait = setTimeout(function() {
+                    clearTimeout(wait);
+                    resolve('Fulfilled');
+                }, 2000);
+            });
+            promise.then(deleteOrder(index));
     }, function(failedReason) {
         console.log("Delete Failed Reason", failedReason);
-    });
-
-    // table.rows[index].style.backgroundColor = "lightblue";
-    // table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
-    // setTimeout(deleteOrder, 2000, index);// change here to make work with promises
+    });   
 };
 
 var deleteOrder = function(index) { 
