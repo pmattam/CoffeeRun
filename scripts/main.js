@@ -62,21 +62,31 @@ coffeeForm.addEventListener('submit', function(event) {
     var size = document.querySelector('[name="size"]:checked').value;
     var order = getCoffeeForm(size);
     var postData = mapFromCoffeeForm(order);
-    $.post(URL, postData);
-    // console.log(postData);
-    // var promise = fetch(URl), {
-    //     method: 'POST',
-    //     body: JSON.stringify(postData),
-    //     headers: new Headers({
-    //     'Content-Type': 'application/json'
-    //     });
-    //     });
-    // };
+    //$.post(URL, postData);
+    
+    var promise = fetch(URL, {
+        method: 'POST',
+        body: JSON.stringify(postData),
+        headers: new Headers({'Content-Type': 'application/json'})
+    });
+    promise.then(function(value) { // function of a promise if fulfilled/successful
+        console.log(value);
+        listOrders.push(order);
+        var addedOrder = addOrderToTable(order);
+        orderList.appendChild(addedOrder);
+        addEventListenerForX();
+        }, function(failedReason) { // function of a promise if rejected/failed
+        console.log("Post Failed Reason", failedReason);
+    });
 
-    listOrders.push(order);
-    var addedOrder = addOrderToTable(order);
-    orderList.appendChild(addedOrder);
-    addEventListenerForX();
+        // Not handling promises right..check above to make it right //
+    // promise.then(function(reason) {
+    //         console.log("reason", reason);
+    //     });
+    // listOrders.push(order);
+    // var addedOrder = addOrderToTable(order);
+    // orderList.appendChild(addedOrder);
+    // addEventListenerForX();
 });  
 
 var addEventListenerForX = function() {
@@ -93,110 +103,59 @@ var handleDelEvent = function(event){
         return el.emailAddress !== toDelEmail;
     });
     listOrders = toDel;
+    var url = URL+'/'+toDelEmail;
+    
         // Without promises //
     // $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', success: function(result) {
     //     console.log("Result is", result);
     // }});
 
         // Instead of callback with in async call...using promise and then do that functionality //
-    var promise = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
-    promise.then(function(result) {
-        console.log("Result in first promise implementation", result);
+    // var promise = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
+    // promise.then(function(result) {
+    //     console.log("Result in promise implementation", result);
+    // });
+
+        // Using Fetch //
+   fetch(url, {method: 'DELETE'})
+        .then(function(result) {
+            console.log("Result in fetch implementation", result);
+            table.rows[index].style.backgroundColor = "lightblue";
+            table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
+            setTimeout(deleteOrder, 2000, index);
+    }, function(failedReason) {
+        console.log("Delete Failed Reason", failedReason);
     });
 
-        // same thing jut another way //
-    // var promise1 = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
-    // var success = function(result) {
-    //     console.log("Result in second promise implementation",result);
-    // };
-    // promise1.then(success);
-
-        // It doesn't work this way //
-    // var promise2 = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
-    // promise2.then(succeeded);
-    // var succeeded = function(result) {
-    //     console.log("It's coming here");
-    //     console.log(result);
-    // };
-
-        // Different way //
-    var response = new Promise(function(resolve) {
-        $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', resolve});
-    });
-
-
-    table.rows[index].style.backgroundColor = "lightblue";
-    table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
-    setTimeout(deleteOrder, 2000, index);// change here to make work with promises
+    // table.rows[index].style.backgroundColor = "lightblue";
+    // table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
+    // setTimeout(deleteOrder, 2000, index);// change here to make work with promises
 };
 
 var deleteOrder = function(index) { 
     table.deleteRow(index);
 };
 
-// var processGetData = function(serverData) {
-//     // getting list/array of only values (which are objects) and not keys from the server data
-//     var orders = Object.values(serverData); 
-//     // which returns a new list and assigning to my own list with mapped data
-//     listOrders = orders.map(mapToCoffeeForm); 
-//     // loop through the objects in the list and add orders and appends to the table
-//     listOrders.forEach(function(order) { 
-//         orderList.appendChild(addOrderToTable(order));
-//     });
-//     addEventListenerForX();
-// };
-
-// function sleep(ms) {
-//     return new Promise(resolve => setTimeout(resolve, ms));
-//   }
-
-// async function demo(timeout) {
-//     //console.log('Taking a break...');
-//     await sleep(timeout);
-//     //console.log(timeout, ' milli second later');
-//   }
-
 var processGetData = function(serverData) {
-    // demo(5000);
-    // console.log("in process get data waiting");
-
-    // getting list/array of only values (which are objects) and not keys from the server data
     var orders = Object.values(serverData); 
     return orders;
 };
 
 var processData = function(orders) {
-    // demo(0);
-    // console.log("in process data waiting");
-
     // which returns a new list and assigning to my own list with mapped data
     listOrders = orders.map(mapToCoffeeForm); 
     // loop through the objects in the list and add orders and appends to the table
     listOrders.forEach(function(order) { 
         orderList.appendChild(addOrderToTable(order));
     });
-    
 };
 
 var displayOrders = function() {
-    //     // without promises //
-    // // $.get(URL, processGetData);
-    //     // using promises //
-    // var promise = $.get(URL);
-    // //console.log(promise);
-    // promise.then(processGetData);
-    //     // or //
-    // //$.get(URL).then(processGetData);
-
-    //     // Using fetch...Bye Bye $.get //
-    // fetch(URL, {method: 'GET'}).then(function(response) {
-    //     return response.json().then(processGetData);
-    // });
-
-        // Using fetch...Bye Bye $.get //
     fetch(URL, {method: 'GET'})
         .then(function(response) {
             return response.json();
+        }, function(failedReason) {
+            console.log('Get Failed Reason', failedReason);
         })
         .then(processGetData)
         .then(processData)
