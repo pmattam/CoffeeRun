@@ -83,12 +83,40 @@ var handleDelEvent = function(event){
         return el.emailAddress !== toDelEmail;
     });
     listOrders = toDel;
-    $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', success: function(result) {
-        console.log(result);
-    }});
+        // Without promises //
+    // $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', success: function(result) {
+    //     console.log("Result is", result);
+    // }});
+
+        // Instead of callback with in async call...using promise and then do that functionality //
+    var promise = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
+    promise.then(function(result) {
+        console.log("Result in first promise implementation", result);
+    });
+
+        // same thing jut another way //
+    // var promise1 = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
+    // var success = function(result) {
+    //     console.log("Result in second promise implementation",result);
+    // };
+    // promise1.then(success);
+
+        // It doesn't work this way //
+    // var promise2 = $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE'});
+    // promise2.then(succeeded);
+    // var succeeded = function(result) {
+    //     console.log("It's coming here");
+    //     console.log(result);
+    // };
+
+        // Different way //
+    // var response = new Promise(function(resolve) {
+    //     $.ajax({url: URL+'/'+toDelEmail, method: 'DELETE', resolve});
+    // });
+
     table.rows[index].style.backgroundColor = "lightblue";
     table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
-    setTimeout(deleteOrder, 2000, index);
+    setTimeout(deleteOrder, 2000, index);// change here to make work with promises
 };
 
 var deleteOrder = function(index) { 
@@ -104,11 +132,19 @@ var processGetData = function(serverData) {
     listOrders.forEach(function(order) { 
         orderList.appendChild(addOrderToTable(order));
     });
-    addEventListenerForX();
+    // addEventListenerForX();
 };
 
 var displayOrders = function() {
-    $.get(URL, processGetData);
+        // without promises //
+    // $.get(URL, processGetData);
+        // using promises //
+    var promise = $.get(URL);
+    //console.log(promise);
+    promise.then(processGetData);
+        // or //
+    //$.get(URL).then(processGetData);
+    addEventListenerForX();
 };
 
 displayOrders();
