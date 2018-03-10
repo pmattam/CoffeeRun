@@ -100,6 +100,7 @@ var handleDelEvent = function(event){
             console.log("Result in fetch implementation", result);
             table.rows[index].style.backgroundColor = "lightblue";
             table.rows[index].cells[5].removeEventListener('click', handleDelEvent);
+            // TODO - MAKE CHANGES USING PROMISES FOR THE SETTIMEOUT ASYNC CALL //
             setTimeout(deleteOrder, 2000, index);
                 // using promises for setTimeout - writing my own promise // 
             // var promise = new Promise(function(resolve) {

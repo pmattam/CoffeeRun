@@ -22,3 +22,9 @@ When the page loads, the order list should be pre-populated with orders that wer
 When the user submits a new order with the form, it should be sent to the coffeerun server, then added as a new row (as before).
 When the barista marks an order completed, the row should be removed as before, and the order should be deleted from the server.
 When the barista marks an order completed, instead of removing the row immediately, change the row's background color to green (or red) to indicate that it has been completed, and remove the row 2 seconds later. You will need to use the setTimeout() function to do this, since JavaScript doesn't have a sleep()function like Python.
+
+CoffeeRun, Part 3
+
+Make API calls using Ajax and JQuery
+
+Make API calls using fetch and promises
